@@ -20,18 +20,21 @@ router.post("/register", (req, res) => {
         .catch(err => res.send(err));
 });
 
-router.post("/login", (req, res) => {
+router.post("/login", (req, res, next) => {
     const { username, password } = req.body;
 
     Users.findBy({ username })
-
-    .then(([user]) => {
+        .first()
+        .then(user => {
+            console.log(user);
             if (user && bcrypt.compareSync(password, user.password)) {
                 // remember this client
+                console.log('what ever this is')
                 req.session.user = {
                     id: user.id,
                     username: user.username,
                 };
+                console.log(req.session)
                 res.status(200).json({ hello: user.username });
             } else {
                 res.status(401).json({ message: "invalid credentials" });
